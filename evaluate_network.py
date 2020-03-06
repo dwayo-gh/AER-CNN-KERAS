@@ -8,6 +8,7 @@ import time, random, numpy as np
 import matplotlib.pyplot as plt
 from keras.models import load_model
 from sklearn.metrics import confusion_matrix
+import testDataSegmentation
 # setting a random seed for the reproducibility purposes
 random.seed(611)
 # creating a time wrapper to calculate the elapsed time in an operation
@@ -49,8 +50,9 @@ if __name__ == '__main__':
     # loading the model and data (Labels, Groud Truth and X_test for prediction)
     model = load_model('model.h5')
     labels = np.load('Class_names.npy')
-    gtTest = np.load('Y_test.npy')
-    X_test = np.load('X_test.npy')
+    # gtTest = np.load('Y_test.npy')
+    # X_test = np.load('X_test.npy')
+    X_test, gtTest = testDataSegmentation.loadTestData()
     # predicting the outputs for the test data
     testPredictions =  model.predict(X_test,verbose=2)
     # calculating the confusion matrix to print the performance for each class
