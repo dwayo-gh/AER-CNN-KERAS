@@ -19,6 +19,12 @@ def get_class_names(path='Samples/'):
     return class_names
 
 
+def scale_minmax(X, min=0.0, max=1.0):
+    X_std = (X - X.min()) / (X.max() - X.min())
+    X_scaled = X_std * (max - min) + min
+    return X_scaled
+
+
 # Main function starts here
 def main(inpath='Samples/', outpath='Preproc/'):
     # defining some variables to be used later
@@ -53,7 +59,7 @@ def main(inpath='Samples/', outpath='Preproc/'):
             audio_path = inpath + classname + '/' + infilename # constructing file name
             # print(audio_path)
             sr = 16000
-            aud, sr = librosa.load(audio_path, sr=sr) # reading the content of the files
+            aud, sr = librosa.load(audio_path, sr=sr)  # reading the content of the files
             # aud = librosa.resample(aud, sr, target_sr, res_type="kaiser_fast")
             # (S, ref=1.0, amin=1e-05, top_db=80.0)
 
@@ -75,6 +81,8 @@ def main(inpath='Samples/', outpath='Preproc/'):
                                                      sr=sr,
                                                      fmin=fmin,
                                                      fmax=fmax)
+            melgram = np.log(melgram + 1e-9)  # add small number to avoid log(0)
+            melgram = scale_minmax(melgram, 0, 255).astype(np.int32)
             melgram = melgram[np.newaxis, :, 0:300, np.newaxis]
             # print("Shape: {}".format(melgram.shape))
             outfile = outpath + classname + '/' + infilename[0:-4]+'.npy'  # creating a string name for out file names
